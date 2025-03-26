@@ -18,7 +18,7 @@ GitHub Actions Workflow: pipeline runs every 3 hours.
       ├── utils                         
       │   ├── create_tables.py          # Creates empty tables on Dune
       │   ├── event_decode.py           # Functions to decode Marketplace events
-      │   └──  topic_map.py             # Topic and key mapping for the contract
+      │   └── topic_map.py              # Topic key mapping for the contract
       ├── initialize.py                 # Initializes first blocks to enable Dune-query-based ingestion checkpoints
       ├── ingest.py                     # Script to run incremental pipeline            
       └── requirements.txt              # Dependencies 
