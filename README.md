@@ -1,4 +1,4 @@
-# Fractal Visions Sonieum Dune Pipeline 
+# Fractal Visions Soneium Dune Pipeline 
 
 Hello! This repository contains the ETL pipeline for <a href="https://dune.com/visionwizards/fractal-visions-soneium" target="_blank" rel="noopener noreferrer"> Fractal Visions Marketplace X Soneium Dune Dashboard</a>. 
 
