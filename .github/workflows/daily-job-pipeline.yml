@@ -1,0 +1,40 @@
+name: Daily Ingestion of Fractal Visions Transaction Data on Soneium
+
+on:
+  schedule:
+    # Run every 3 hours
+    - cron: '0 */3 * * *'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  scrape-infer-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Set up environment variables
+        run: |
+          echo "DUNE_API_KEY_FRACTALVISIONS_SONEIUM=${{ secrets.DUNE_API_KEY_FRACTALVISIONS_SONEIUM }}" >> .env
+          echo "DUNE_QUERY_SONEIUM_CHECKPOINT=${{ secrets.DUNE_QUERY_SONEIUM_CHECKPOINT }}" >> .env
+          echo "DUNE_API_REQUEST_TIMEOUT=${{ secrets.DUNE_API_REQUEST_TIMEOUT }}" >> .env
+          
+      - name: Run job ingest pipeline
+        run: python ingest.py
+      
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update job listings [skip ci]" && git push) 
