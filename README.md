@@ -26,6 +26,7 @@ GitHub Actions Workflow: pipeline runs every 3 hours.
 # Requirements 
 - Python 3.11+
 - Pandas 2.2.0
+- Dune SDK 1.3.0
 - Web3 6.0.0
 - ETH-abi 4.0.0
 - API Keys (Dune Analytics) <br>
