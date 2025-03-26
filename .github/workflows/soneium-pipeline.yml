@@ -10,6 +10,8 @@ jobs:
   soneium-data-ingestion:
     runs-on: ubuntu-latest
     timeout-minutes: 30  # Add timeout to prevent hanging jobs
+    permissions:
+      contents: write  # Add write permissions for the GITHUB_TOKEN
 
     steps:
       - name: Checkout repository
