@@ -106,6 +106,22 @@ def decode_NewBid(data):
     df['token_type'] = df['decoded_data'].apply(lambda x: x[13])
     df['status'] = df['decoded_data'].apply(lambda x: x[14])
 
+   # Map enum values to their readable names 
+    token_type_names = {
+        0: "ERC1155",
+        1: "ERC721"
+    }
+    
+    status_names = {
+        0: "CREATED",
+        1: "ACTIVE", 
+        2: "CANCELLED",
+        3: "EXECUTED"
+    }
+
+    df['token_type'] = df['token_type'].map(token_type_names)
+    df['status'] = df['status'].map(status_names)
+
     df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
     df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
     df['timestamp'] = df['timeStamp'].apply(lambda x: int(x, 16))
@@ -176,6 +192,22 @@ def decode_NewAuction(data):
     df['token_type'] = df['decoded_data'].apply(lambda x: x[12])
     df['status'] = df['decoded_data'].apply(lambda x: x[13])
 
+    # Map enum values to their readable names
+    token_type_names = {
+        0: "ERC1155",
+        1: "ERC721"
+    }
+    
+    status_names = {
+        0: "CREATED",
+        1: "ACTIVE", 
+        2: "CANCELLED",
+        3: "EXECUTED"
+    }
+
+    df['token_type'] = df['token_type'].map(token_type_names)
+    df['status'] = df['status'].map(status_names)
+
     df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
     df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
     df['timestamp'] = df['timeStamp'].apply(lambda x: int(x, 16))
@@ -244,7 +276,7 @@ def decode_NewListing(data):
     df['status'] = df['decoded_data'].apply(lambda x: x[10])
     df['reserved'] = df['decoded_data'].apply(lambda x: x[11])
 
-    # Map enum values to their readable names if needed
+    # Map enum values to their readable names 
     token_type_names = {
         0: "ERC1155",
         1: "ERC721"
@@ -259,6 +291,7 @@ def decode_NewListing(data):
 
     df['token_type'] = df['token_type'].map(token_type_names)
     df['status'] = df['status'].map(status_names)
+    
 
     df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
     df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
@@ -404,7 +437,7 @@ def decode_NewOffer(data):
     df['token_type'] = df['decoded_data'].apply(lambda x: x[8])
     df['status'] = df['decoded_data'].apply(lambda x: x[9])
     
-    # Map enum values to their readable names if needed
+    # Map enum values to their readable names
     token_type_names = {
         0: "ERC1155",
         1: "ERC721"
