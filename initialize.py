@@ -2,6 +2,7 @@ import requests
 import json
 import os
 from utils.event_decode import decode_NewListing, decode_NewSale, decode_CancelledListing, decode_NewOffer
+from utils.event_decode import decode_NewAuction, decode_NewBid, decode_AuctionClosed
 from dune_client.client import DuneClient
 from dune_client.query import QueryBase
 import dotenv
@@ -16,10 +17,6 @@ dune = DuneClient(os.getenv("DUNE_API_KEY_FRACTALVISIONS_SONEIUM"))
 def fetch_logs(instance_url, from_block, to_block, contract_address, topic0, max_retries=5, initial_delay=5):
     """
     Fetch logs from a blockchain node using RPC call with retry logic
-    Args:
-        instance_url (str): Base URL of the blockchain node
-        max_retries (int): Maximum number of retry attempts
-        initial_delay (int): Initial delay in seconds before retrying
     """
     url = instance_url
     params = {
@@ -158,12 +155,15 @@ def main():
         instance_url = "https://soneium.blockscout.com/api"
         contract_address = "0xF87f5313E830d8E2670898e231D8701532b1eB09"
         from_block = 1871690
-        to_block = 3500000
+        to_block = 4000000
         decoder_functions = {
             "NewSale": decode_NewSale,
             "NewListing": decode_NewListing,
             "CancelledListing": decode_CancelledListing,
-            "NewOffer": decode_NewOffer
+            "NewOffer": decode_NewOffer,
+            "NewAuction": decode_NewAuction,
+            "NewBid": decode_NewBid,
+            "AuctionClosed": decode_AuctionClosed
         }
      
         for topic in topic_mapping:
@@ -195,6 +195,7 @@ def main():
                 print(f"Decoded {len(df)} logs")
                 
                 df['event_type'] = topic_name
+                print(df.head())
 
                 # save to a csv file
                 df.to_csv(f"decoded/{topic_name}_initial.csv", index=False)

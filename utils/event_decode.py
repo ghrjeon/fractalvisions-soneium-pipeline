@@ -3,6 +3,191 @@ from web3 import Web3
 from eth_abi import decode
 
 
+def decode_AuctionClosed(data):
+    '''
+    Decode AuctionClosed
+    topic0: 0x7003143824ad94e684efcfd33e097dd7cd0e67243daf20f345f5186a9a7ba00a
+
+    AuctionClosed(
+        uint256 indexed auctionId,
+        address indexed assetContract,
+        address indexed closer,
+        uint256 tokenId,
+        address auctionCreator,
+        address winningBidder,
+    )
+    '''
+
+    df = pd.DataFrame(data)
+
+    # Extract topics
+    df['auction_id'] = df['topics'].apply(lambda x: int(x[1], 16))
+    df['asset_contract'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[2][-40:]))
+    df['closer'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[3][-40:]))
+
+    # Define the non_indexed_types variables for the Auction struct
+    non_indexed_types = ['uint256', 'address', 'address']
+    # Decode the data column
+    df['decoded_data'] = df['data'].apply(lambda x: decode(non_indexed_types, bytes.fromhex(x[2:] if x.startswith('0x') else x)))
+
+    # Decode the struct fields
+    # Create separate columns for each decoded value
+    df['token_id'] = df['decoded_data'].apply(lambda x: x[0])
+    df['auction_creator'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[1]))
+    df['winning_bidder'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[2]))
+
+    df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
+    df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
+    df['timestamp'] = df['timeStamp'].apply(lambda x: int(x, 16))
+    df['block_number'] = df['blockNumber'].apply(lambda x: int(x, 16))
+    df['transaction_hash'] = df['transactionHash']
+
+    df = df[['auction_id', 'asset_contract', 'closer', 'token_id', 'auction_creator', 'winning_bidder', 'gas_price', 'gas_used', 'block_number', 'timestamp', 'transaction_hash']]
+
+    return df
+
+def decode_NewBid(data):
+    '''
+    Decode NewBid
+    topic0: 0x433a278e1c55403e97ab8ffef6ce9fddd5d1fb2695745bbc3affbe0b8106ec6b
+
+
+    NewBid(
+        uint256 indexed auctionId,
+        address indexed bidder,
+        address indexed assetContract,
+        uint256 bidAmount
+        (uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,address,address,uint256,uint256) auction
+    )
+    Auction is a struct with the following fields:
+    - uint256 auctionId
+    - uint256 tokenId
+    - uint256 quantity
+    - uint256 minimumBidAmount
+    - uint256 buyoutBidAmount
+    - uint256 timeBufferInSeconds
+    - uint256 bidBufferBps
+    - uint256 startTimestamp
+    - uint256 endTimestamp
+    - address auctionCreator
+    - address assetContract
+    - address currency
+    - uint256 tokenType
+    - uint256 status
+    '''
+
+    df = pd.DataFrame(data)
+
+    # Extract topics
+    df['auction_id'] = df['topics'].apply(lambda x: int(x[1], 16))
+    df['bidder'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[2][-40:]))
+    df['asset_contract'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[3][-40:]))
+
+    # Define the non_indexed_types variables for the Auction struct
+    non_indexed_types = ['uint256','uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'address', 'address', 'address', 'uint256', 'uint256']
+    # Decode the data column
+    df['decoded_data'] = df['data'].apply(lambda x: decode(non_indexed_types, bytes.fromhex(x[2:] if x.startswith('0x') else x)))
+
+    # Decode the struct fields
+    # Create separate columns for each decoded value
+    df['bid_amount'] = df['decoded_data'].apply(lambda x: x[0])
+    df['auction_id_decoded'] = df['decoded_data'].apply(lambda x: x[1])
+    df['token_id'] = df['decoded_data'].apply(lambda x: x[2])
+    df['quantity'] = df['decoded_data'].apply(lambda x: x[3])
+    df['minimum_bid_amount'] = df['decoded_data'].apply(lambda x: x[4])
+    df['buyout_bid_amount'] = df['decoded_data'].apply(lambda x: x[5])
+    df['time_buffer_in_seconds'] = df['decoded_data'].apply(lambda x: x[6])
+    df['bid_buffer_bps'] = df['decoded_data'].apply(lambda x: x[7])
+    df['start_timestamp'] = df['decoded_data'].apply(lambda x: x[8])
+    df['end_timestamp'] = df['decoded_data'].apply(lambda x: x[9])
+    df['auction_creator_decoded'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[10]))
+    df['asset_contract_decoded'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[11]))
+    df['currency'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[12]))
+    df['token_type'] = df['decoded_data'].apply(lambda x: x[13])
+    df['status'] = df['decoded_data'].apply(lambda x: x[14])
+
+    df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
+    df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
+    df['timestamp'] = df['timeStamp'].apply(lambda x: int(x, 16))
+    df['block_number'] = df['blockNumber'].apply(lambda x: int(x, 16))
+    df['transaction_hash'] = df['transactionHash']
+
+    # Collate data needed
+    df = df[['auction_id', 'bidder', 'asset_contract', 'bid_amount', 'token_id', 'quantity', 'minimum_bid_amount', 'buyout_bid_amount', 'time_buffer_in_seconds', 'bid_buffer_bps', 'start_timestamp', 'end_timestamp', 'currency', 'token_type', 'status',
+             'gas_price', 'gas_used', 'block_number', 'timestamp','transaction_hash']]
+
+    return df
+
+
+def decode_NewAuction(data):
+    '''
+    Decode NewAuction
+    topic0: 0x5afd538bb1e7fc354db91c5dc4876ea2321a22fb8fbb69c84bda1f84ce1f45df
+
+    NewAuction(
+        address indexed auctionCreator,
+        uint256 indexed auctionId,
+        address indexed assetContract,
+        (uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,address,address,uint256,uint256) auction
+    )
+    Auction is a struct with the following fields:
+        uint256 auctionId,
+        uint256 tokenId,
+        uint256 quantity,
+        uint256 minimumBidAmount,
+        uint256 buyoutBidAmount,
+        uint256 timeBufferInSeconds,
+        uint256 bidBufferBps,
+        uint256 startTimestamp,
+        uint256 endTimestamp,
+        address auctionCreator,
+        address assetContract,
+        address currency,
+        uint256 tokenType,
+        uint256 status
+    '''
+    df = pd.DataFrame(data)
+
+    # Extract topics
+    df['auction_creator'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[1][-40:]))
+    df['auction_id'] = df['topics'].apply(lambda x: int(x[2], 16))
+    df['asset_contract'] = df['topics'].apply(lambda x: Web3.to_checksum_address('0x' + x[3][-40:]))
+    
+    # Define the non_indexed_types variables for the Auction struct
+    non_indexed_types = ['uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'uint256', 'address', 'address', 'address', 'uint256', 'uint256']
+
+    # Decode the data column
+    df['decoded_data'] = df['data'].apply(lambda x: decode(non_indexed_types, bytes.fromhex(x[2:] if x.startswith('0x') else x)))
+    
+    # Decode the struct fields
+    # Create separate columns for each decoded value
+    df['auction_id_decoded'] = df['decoded_data'].apply(lambda x: x[0])
+    df['token_id'] = df['decoded_data'].apply(lambda x: x[1])
+    df['quantity'] = df['decoded_data'].apply(lambda x: x[2])
+    df['minimum_bid_amount'] = df['decoded_data'].apply(lambda x: x[3])
+    df['buyout_bid_amount'] = df['decoded_data'].apply(lambda x: x[4])
+    df['time_buffer_in_seconds'] = df['decoded_data'].apply(lambda x: x[5])
+    df['bid_buffer_bps'] = df['decoded_data'].apply(lambda x: x[6])
+    df['start_timestamp'] = df['decoded_data'].apply(lambda x: x[7])
+    df['end_timestamp'] = df['decoded_data'].apply(lambda x: x[8])
+    df['auction_creator_decoded'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[9]))
+    df['asset_contract_decoded'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[10]))
+    df['currency'] = df['decoded_data'].apply(lambda x: Web3.to_checksum_address(x[11]))
+    df['token_type'] = df['decoded_data'].apply(lambda x: x[12])
+    df['status'] = df['decoded_data'].apply(lambda x: x[13])
+
+    df['gas_price'] = df['gasPrice'].apply(lambda x: int(x, 16))
+    df['gas_used'] = df['gasUsed'].apply(lambda x: int(x, 16))
+    df['timestamp'] = df['timeStamp'].apply(lambda x: int(x, 16))
+    df['block_number'] = df['blockNumber'].apply(lambda x: int(x, 16))
+    df['transaction_hash'] = df['transactionHash']
+
+    # Collate data needed
+    df = df[['auction_creator', 'auction_id', 'asset_contract', 'token_id', 'quantity', 'minimum_bid_amount', 'buyout_bid_amount', 'time_buffer_in_seconds', 'bid_buffer_bps', 'start_timestamp', 'end_timestamp', 'currency', 'token_type', 'status',
+             'gas_price', 'gas_used', 'block_number', 'timestamp','transaction_hash']]
+
+    return df
+
 
 def decode_NewListing(data):
 
