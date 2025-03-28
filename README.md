@@ -2,7 +2,10 @@
 
 Hello! This repository contains the ETL pipeline for <a href="https://dune.com/visionwizards/fractal-visions-soneium" target="_blank" rel="noopener noreferrer"> Fractal Visions Marketplace X Soneium Dune Dashboard</a>. 
 
-The pipeline collects Fractal Visions Marketplace contract activity on the Soneium Chain `0xF87f5313E830d8E2670898e231D8701532b1eB09` using RPC API, decodes transaction logs with a custom Python script, and uploads the data onto Dune Analytics platform using SDK. 
+The pipeline 
+1. collects Fractal Visions Marketplace contract activity on the Soneium Chain using RPC API `0xF87f5313E830d8E2670898e231D8701532b1eB09` 
+2. decodes transaction logs with a custom Python script
+3. uploads the data onto Dune Analytics platform using SDK
 
 ## Stacks used
 <b>Data Collection</b>: Python, Blockscout RPC API <br>
