@@ -38,12 +38,4 @@ jobs:
           
       - name: Run job ingest pipeline
         run: python ingest.py
-        continue-on-error: false  # Stop workflow if script fails
-      
-      - name: Commit and push changes
-        if: success()  # Only run if previous steps succeeded
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update Soneium data [skip ci]" && git push) 
+        continue-on-error: false  # Stop workflow if script fails 
