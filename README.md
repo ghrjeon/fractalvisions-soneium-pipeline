@@ -12,7 +12,7 @@ The pipeline
 <b>Data Processing</b>: Python, Web3.py, eth-abi <br>
 <b>Orchestration</b>: GitHub Actions <br>
 
-GitHub Actions Workflow: pipeline runs every 3 hours. 
+GitHub Actions Workflow: pipeline runs every 6 hours. 
 
 # Directory Structure  
       .
