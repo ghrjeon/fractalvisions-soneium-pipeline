@@ -181,7 +181,7 @@ def get_latest_logs():
         query = query
     )
     job_id = execution_result.execution_id  
-
+    time.sleep(10)
 
     if (success := wait_for_execution(dune, job_id))[0]:
         rows = success[1]
